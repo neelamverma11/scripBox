@@ -1,4 +1,4 @@
-/* import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Login from './Login';
 import ChallengeItem from './ChallengeItem';
 import { Container, Typography, Grid, Button, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
@@ -106,4 +106,4 @@ const ChallengesPage = () => {
     );
 };
 
-export default ChallengesPage; */
+export default ChallengesPage;

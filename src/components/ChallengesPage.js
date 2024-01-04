@@ -1,13 +1,28 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Login from './Login';
-import ChallengeItem from './ChallengeItem';
-import { Container, Typography, Grid, Button, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
+import { Container, Typography, Grid, TableCell, Button, Table, Stack, Card, TableContainer, TableHead, TableRow, TableBody, Paper } from '@mui/material';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import UserListHead from './UserListHead';
+
+const columns = [
+    { id: 'id', label: 'ID', minWidth: 50 },
+    { id: 'title', label: 'Title', minWidth: 100 },
+    { id: 'description', label: 'Description', minWidth: 170 },
+    { id: 'tags', label: 'Tags', minWidth: 50 },
+    { id: 'vote', label: 'Votes', minWidth: 110 },
+    { id: 'date', label: 'Date', minWidth: 50 },];
 
 const ChallengesPage = () => {
-    // const history = useHistory();
     const [user, setUser] = useState(null);
     const [challenges, setChallenges] = useState([]);
     const [sortedByVotes, setSortedByVotes] = useState(false);
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('vote');
+
+    const handleVote = (index) => {
+        // voteForChallenge(index);
+    };
 
     useEffect(() => {
         const storedChallenges = JSON.parse(localStorage.getItem('challenges')) || [];
@@ -48,62 +63,49 @@ const ChallengesPage = () => {
         setSortedByVotes(false);
     };
 
-    const handleFormNavigation = () => {
-        // history.push('/newchallenge');
-    };
-
     return (
-        <Container maxWidth="lg">
-            <Typography variant="h3" gutterBottom>
-                Hack Ideas
-            </Typography>
+        <Container>
             {!user ? (
                 <Login setUser={setUser} />
             ) : (
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                        <Button variant="contained" onClick={handleFormNavigation} style={{ marginBottom: '16px' }}>
-                            Add New Challenge
+                <><Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                    <Typography variant="h4" gutterBottom>
+                        Hack Ideas
+                    </Typography>
+                    <Link to={`/challengeform`}>
+                        <Button variant="contained">
+                            Add Hack
                         </Button>
-                    </Grid>
-                    <Grid item xs={12} md={8}>
-                        <Typography variant="h2" gutterBottom>
-                            Challenges
-                        </Typography>
-                        <Button variant="outlined" onClick={handleSortByVotes}>
-                            Sort by Votes {sortedByVotes ? 'Asc' : 'Desc'}
-                        </Button>
-                        <Button variant="outlined" onClick={handleSortByCreationDate}>
-                            Sort by Creation Date
-                        </Button>
-                        <TableContainer component={Paper} style={{ marginTop: '16px' }}>
+                    </Link>
+                </Stack><Card>
+                        <TableContainer sx={{ minWidth: 600 }}>
                             <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Title</TableCell>
-                                        <TableCell>Description</TableCell>
-                                        <TableCell>Tags</TableCell>
-                                        <TableCell>Votes</TableCell>
-                                        <TableCell>Date</TableCell>
-                                    </TableRow>
-                                </TableHead>
+                                <UserListHead
+                                    // key={countries.id}
+                                    // order={order}
+                                    // orderBy={orderBy}
+                                    headLabel={columns}
+                                    // rowCount={countries.length}
+                                    onRequestSort={handleSortByVotes} />
                                 <TableBody>
-                                    {challenges.map((challenge, index) => (
-                                        <ChallengeItem
-                                            key={index}
-                                            challenge={challenge}
-                                            index={index}
-                                            voteForChallenge={handleVoteForChallenge}
-                                        />
-                                    ))}
+                                    {challenges
+                                        .map((challenge, index) => (
+                                            <TableRow hover key={index}>
+                                                <TableCell align="left">{index + 1}</TableCell>
+                                                <TableCell align="left">{challenge.title}</TableCell>
+                                                <TableCell align="left">{challenge.description}</TableCell>
+                                                <TableCell align="left">{challenge.tags.join(', ')}</TableCell>
+                                                <TableCell align="left">{challenge.votes}</TableCell>
+                                                <TableCell align="left">{new Date(challenge.createdAt).toLocaleDateString()}</TableCell>
+                                            </TableRow>
+                                        ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>
-                    </Grid>
-                </Grid>
+                    </Card></>
             )}
         </Container>
     );
 };
 
-export default ChallengesPage;
+export default ChallengesPage; 

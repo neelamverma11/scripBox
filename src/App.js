@@ -1,11 +1,15 @@
 import React from 'react';
 import ChallengesPage from './components/ChallengesPage';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import ChallengeForm from './components/ChallengeForm';
 
 const App = () => {
   return (
     <Router>
-      <ChallengesPage />
+      <Routes>
+        <Route path='/' element={<ChallengesPage />} />
+        <Route path='/challengeform' element={<ChallengeForm />} />
+      </Routes>
     </Router>
   );
 };

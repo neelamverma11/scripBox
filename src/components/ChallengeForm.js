@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Chip, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-const predefinedTags = ['Feature', 'Tech', 'Design', 'Innovation']; // Example predefined tags
+const predefinedTags = ['Feature', 'Tech', 'Design', 'Innovation']; //  predefined tags
 
-const ChallengeForm = ({ addChallenge }) => {
+const ChallengeForm = () => {
+    const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [tags, setTags] = useState([]);
-    const [suggestions, setSuggestions] = useState(predefinedTags);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleInputChange = (e) => {
         const inputValue = e.target.value;
@@ -17,7 +20,6 @@ const ChallengeForm = ({ addChallenge }) => {
                 tag.toLowerCase().includes(inputValue.toLowerCase())
             );
         }
-        setSuggestions(matches);
     };
 
     const handleKeyDown = (e) => {
@@ -35,23 +37,40 @@ const ChallengeForm = ({ addChallenge }) => {
         setTags(tags.filter((tag) => tag !== tagToDelete));
     };
 
-    const handleSubmit = () => {
+    const addChallenge = () => {
         if (title.trim() !== '' && description.trim() !== '' && tags.length > 0) {
             const newChallenge = {
                 title,
                 description,
                 tags,
                 votes: 0,
+                createdAt: new Date().toISOString(),
             };
-            addChallenge(newChallenge);
-            setTitle('');
-            setDescription('');
-            setTags([]);
+            try {
+                const storedChallenges = JSON.parse(localStorage.getItem('challenges')) || [];
+                const updatedChallenges = [...storedChallenges, newChallenge];
+                localStorage.setItem('challenges', JSON.stringify(updatedChallenges));
+                navigate('/', { replace: true })
+                setSuccessMessage('Challenge added successfully.');
+                setErrorMessage('');
+                setTitle('');
+                setDescription('');
+                setTags([]);
+            } catch (error) {
+                setErrorMessage('Failed to add challenge. Please try again.');
+                setSuccessMessage('');
+            }
+        } else {
+            setErrorMessage('Please fill in all the fields.');
+            setSuccessMessage('');
         }
     };
 
+
     return (
         <Container maxWidth="sm">
+            {successMessage && <Typography variant="body1" color="success">{successMessage}</Typography>}
+            {errorMessage && <Typography variant="body1" color="error">{errorMessage}</Typography>}
             <Typography variant="h4" gutterBottom>
                 Add New Challenge
             </Typography>
@@ -94,7 +113,7 @@ const ChallengeForm = ({ addChallenge }) => {
                     }}
                 />
             </Box>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
+            <Button variant="contained" color="primary" onClick={addChallenge}>
                 Add Challenge
             </Button>
         </Container>
